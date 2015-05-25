@@ -1,0 +1,37 @@
+'''
+The heading_finder function gives the most frequent headers -
+identified by caps mixed with spaces followed by a colon - in
+the transcriptions collection.
+
+The function can require a min and max transcription id value
+by including "{"_id":{"$gte":min,"$lte":max}}" in the find
+statement and adding "min" and "max" as arguments.
+
+Settinng the third argument False gives least frequent tags.
+'''
+
+import re
+from bson.son import SON
+
+#db = client.scribe
+training_collection = client.graham.training_data
+
+heading_regex = re.compile('[A-Z]{1}[A-Z \-]+[A-Z]{1}(?=:| {2}|\r)', re.MULTILINE)
+
+
+def nhtd(transcription_id):
+        transcription_text=training_collection.find_one(transcription_id)["text"]
+        headings1=heading_regex.findall(transcription_text)
+        headings_list=[]
+        for x in headings1:
+                headings_list.append(x)
+        #return headings_list
+        texts1=heading_regex.split(transcription_text)
+        if len(texts1) > len(headings_list):
+                headings_list.insert(0,'dummy heading')
+        transcription_dict={}
+        for t,h in zip(texts1,headings_list):
+                transcription_dict.setdefault(h,[]).append(t)
+        #transcription_dict=dict(zip(headings_list,texts1))
+        return transcription_dict
+        #return len(texts1), len(headings1)
