@@ -1,3 +1,9 @@
+'''
+The heading-text-dictionary function takes the text of a transcript
+and makes a dictionary with the headings as keys and the associated
+text as values.
+'''
+
 import re
 from bson.son import SON
 
@@ -21,5 +27,7 @@ def nhtd(transcription_id):
         for t,h in zip(texts1,headings_list):
                 transcription_dict.setdefault(h,[]).append(t)
         #transcription_dict=dict(zip(headings_list,texts1))
+        for k in transcription_dict:
+                transcription_dict[k]=''.join(transcription_dict[k])
         return transcription_dict
         #return len(texts1), len(headings1)
