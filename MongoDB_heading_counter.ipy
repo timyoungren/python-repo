@@ -10,28 +10,18 @@ statement and adding "min" and "max" as arguments.
 Settinng the third argument False gives least frequent tags.
 '''
 
+import collections
 import re
 from bson.son import SON
 
-#db = client.scribe
-training_collection = client.graham.training_data
+db = client.xyz
 
-heading_regex = re.compile('[A-Z]{1}[A-Z \-]+[A-Z]{1}(?=:| {2}|\r)', re.MULTILINE)
+h = re.compile('[A-Z]{1}[A-Z \-]+[A-Z]{1}(?= {2}|:)', re.MULTILINE)
 
+#c = collections.Counter()
 
-def nhtd(transcription_id):
-        transcription_text=training_collection.find_one(transcription_id)["text"]
-        headings1=heading_regex.findall(transcription_text)
-        headings_list=[]
-        for x in headings1:
-                headings_list.append(x)
-        #return headings_list
-        texts1=heading_regex.split(transcription_text)
-        if len(texts1) > len(headings_list):
-                headings_list.insert(0,'dummy heading')
-        transcription_dict={}
-        for t,h in zip(texts1,headings_list):
-                transcription_dict.setdefault(h,[]).append(t)
-        #transcription_dict=dict(zip(headings_list,texts1))
-        return transcription_dict
-        #return len(texts1), len(headings1)
+def hf(min,max,descending=True):
+        for a in db.transcriptions.find({"_id":{"$gte":min,"$lte":max}}):
+                c.update(h.findall(a["text"]))
+                c.update(h.findall("ABC:"))
+        return c
